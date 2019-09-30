@@ -1,0 +1,143 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>customers</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      /* font: 20px Helvetica, Arial; */
+      font-size: 100%;
+      background-color: #f5f5f5;
+    }
+
+    .top-menu {
+      height: 69px;
+      width: 100%;
+      border-bottom: 1px solid #d8dfe3;
+      background-color: #ffffff;
+    }
+
+    .top-menu span {
+      width: 96px;
+      height: 70px;
+      background: url(/top-menu.png) -3px -118px no-repeat;
+    }
+
+    .top-menu span.customers {
+      margin-bottom: -1px;
+      float: left;
+    }
+
+    .top-menu span.chats {
+      background-position: -95px 25px;
+      cursor: pointer;
+      float: right;
+    }
+
+    .top-menu span.history {
+      background-position: -190px 24px;
+      cursor: pointer;
+    }
+    ul {
+      background-color: #ffffff;
+    }
+
+    ul .one {
+      position: relative;
+      height: 60px;
+      border-bottom: 1px solid #e7ebee;
+      padding: 16px;
+    }
+
+    .one .status {
+      background: #26c281;
+      border-radius: 50%;
+      width: 9px;
+      height: 9px;
+      position: absolute;
+      top: 24px;
+      right: 17px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="list">
+    <div class="top-menu">
+      <span class="customers"></span>
+      <span class="chats"></span>
+      <!-- <span class="history"></span> -->
+    </div>
+    <ul>
+      <li v-for="(item, key) in msgCount" :key="key" class="one" @click="goChat(key)">
+        <span class="user">{{item.name}}</span>
+        <span :class="{'status': item.msgNum}">{{item.msgNum}}</span>
+      </li>
+    </ul>
+  </div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/vue"></script>
+  <script src="//cdn.bootcss.com/vue-router/3.0.1/vue-router.min.js"></script>
+  <script src="//unpkg.com/vuex"></script>
+  <script>
+    let app = new Vue({
+      el: '#list',
+      data: {
+        socket: io(),
+        msgList: [],
+        msgCount: {}
+      },
+      methods: {
+        async goChat(name) {
+          await this.socket.emit('read', name);
+          window.location.href = '/chat?name=' + name
+        }
+      },
+      mounted() {
+        this.socket.on('connect', () => {
+          this.socket.emit('getAllMessages');
+          this.socket.emit('getAllMsgCount');
+        });
+        this.socket.on('allMessages', (messages) => {
+          this.msgList = messages
+        });
+        this.socket.on('allMsgCount', (content) => {
+          content.forEach(item => {
+            this.$set(this.msgCount, item.name, item)
+          });
+        });
+        this.socket.on('msgcount', (content) => {
+          this.$set(this.msgCount, content.name, content)
+        });
+        // let allCustomer = {}
+        // socket.emit('chatmessage', {
+        //   name: 'service',
+        //   to: 'all',
+        //   msg: '上线了',
+        //   createAt: new Date()
+        // });
+        // socket.on('chatmessage', function (data) {
+        //   if (data.name !== 'service') {
+        //     if (allCustomer[data.name]) {
+        //       allCustomer[data.name] += 1
+        //     } else {
+        //       allCustomer[data.name] = 1
+        //     }
+        //     console.log(allCustomer)
+        //     $('#messages').append($('<a href="/chat?name=' + data.name + '">').text(data.name + ':' + allCustomer[data.name]));
+        //   }
+        // });
+      }
+    })
+  </script>
+</body>
+
+</html>
