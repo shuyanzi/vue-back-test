@@ -1,8 +1,8 @@
 // let http = require('http')
-// let users = [
-//   {id: 1,name: 'da'},
-//   {id: 2,name: '2da'},
-// ]
+let users = [
+  {id: 1,name: 'da'},
+  {id: 2,name: '2da'},
+]
 // let server = http.createServer((req, res) => {
 //   res.setHeader('Access-Control-Allow-Origin', '*')
 //   if (req.url === '/api/users') {
@@ -24,6 +24,9 @@ console.log(__dirname)
 // app.use('/images', express.static('/Web/images'))
 var dir = path.join(__dirname, 'Web/images');
 app.use(express.static(dir));
+app.get('/api/users', function (req, res) {
+  res.end(JSON.stringify(users));
+});
 app.get('/customer-list', function (req, res) {
   res.sendFile(__dirname + '/Web/customers.html');
 });
