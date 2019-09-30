@@ -2,6 +2,7 @@
 let users = [
   {id: 1,name: 'da'},
   {id: 2,name: '2da'},
+  {id: 3,name: '23da'},
 ]
 // let server = http.createServer((req, res) => {
 //   res.setHeader('Access-Control-Allow-Origin', '*')
